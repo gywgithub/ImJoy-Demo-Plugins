@@ -46,19 +46,26 @@ class ImJoyPlugin {
             const list = document.createElement("div");
             fileList.appendChild(list);
             for (let i = 0; i < files.length; i++) {
-                const li = document.createElement("div");
-                list.appendChild(li);
+                const container = document.createElement("div");
+                container.style.display = "flex"
+                container.style.marginBottom = "10px"
+                list.appendChild(container);
 
+                const divImg = document.createElement("div");
                 const img = document.createElement("img");
                 img.src = window.URL.createObjectURL(files[i]);
                 img.height = 200;
                 img.onload = function() {
                     window.URL.revokeObjectURL(this.src);
                 }
-                li.appendChild(img);
-                const info = document.createElement("span");
-                info.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + files[i].name;
-                li.appendChild(info);
+                divImg.appendChild(img);
+                container.appendChild(divImg);
+
+
+                const info = document.createElement("div");
+                info.innerHTML = files[i].name;
+                info.style.paddingLeft = "10px"
+                container.appendChild(info);
             }
         }
     }
@@ -98,23 +105,41 @@ class ImJoyPlugin {
         text.innerHTML = '检测结束!'
         if (res && res.length > 0) {
             console.log('predict: ', res)
-            
+
             const list = document.createElement("div");
                 predictResult.appendChild(list);
                 for (let i = 0; i < res.length; i++) {
-                    const li = document.createElement("div");
-                    list.appendChild(li);
+                    const container = document.createElement("div");
+                    container.style.display = "flex"
+                    container.style.marginBottom = "10px"
+                    list.appendChild(container);
 
+                    const divImg = document.createElement("div");
                     const img = document.createElement("img");
                     img.src = res[i].predictUrl
-                    img.height = 100;
+                    img.height = 200;
                     img.onload = function() {
                         window.URL.revokeObjectURL(this.src);
                     }
-                    li.appendChild(img);
-                    const info = document.createElement("span");
-                    info.innerHTML ='&nbsp;&nbsp;&nbsp;&nbsp;' +  res[i].fileName + " ;  IOU: " + res[i].IOU + " ; " + res[i].message;
-                    li.appendChild(info);
+                    divImg.appendChild(img);
+                    container.appendChild(divImg);
+
+                    const info = document.createElement("div");
+                    const p1 = document.createElement("p")
+                    p1.innerHTML = res[i].fileName
+                    info.style.paddingLeft = "10px"
+                    info.appendChild(p1)
+
+                    const p2 = document.createElement("p")
+                    p2.innerHTML = "IOU: " + res[i].IOU
+                    info.style.paddingLeft = "10px"
+                    info.appendChild(p2)
+
+                    const p3 = document.createElement("p")
+                    p3.innerHTML = res[i].message
+                    info.style.paddingLeft = "10px"
+                    info.appendChild(p3)
+                    container.appendChild(info);
                 }
         }
     })
@@ -125,7 +150,7 @@ class ImJoyPlugin {
         let files = document.getElementById('fileElem').files
         if (files && files.length > 0) {
             let url = uploadUrl
-            
+
             loading.style.display = 'block'
             text.innerHTML = '正在上传, 请稍等...'
             for (let i = 0; i < files.length; i++) {
@@ -153,6 +178,7 @@ class ImJoyPlugin {
             console.log('请选择文件')
         }
     })
+
   }
 }
 
@@ -182,7 +208,7 @@ api.export(new ImJoyPlugin())
             <img id="img01">
         </div>
     </div>
-   
+
 </window>
 <style lang="css">
 .container {
