@@ -1,4 +1,4 @@
-﻿<docs lang="markdown">
+<docs lang="markdown">
     [TODO: write documentation for this plugin.]
 </docs>
 
@@ -34,6 +34,7 @@
     import random
     import time
     class ImJoyPlugin():
+
         def setup(self):
         print('setup in python')
 
@@ -49,36 +50,43 @@
     res.append({
         'IOU': random.random(),
         'fileName': item.filename,
-        'predictUrl': item.url,
+        'url1': item.url,
         'message': ''
     })
 
     print(res)
-    time.sleep(3)
+    time.sleep(1)
     return res
 
     # 1: 1 人脸核验
     async def predictII(self, args):
         print(args)
+    url1 = 'http://192.168.199.172:3000/images/t.jpg'
+    url2 = 'http://192.168.199.172:3000/images/t2.jpg'
+
     win = await api.createWindow({
         'name': 'ResultWindow',
         'type': 'ResultWindow',
-        'w': 10,
-        'h': 10,
+        'w': 40,
+        'h': 15,
         'data': {
             'ID': 0,
             'flag': '是',
-            'time': '0s'
+            'time': '0s',
+            'url1': '',
+            'url2': ''
         }
     })
     i = 1
-    while i <= 1000:
+    while i <= 10:
         win.run({
             'function': 'FunctionII',
             'data': {
                 'ID': i,
                 'flag': '是',
-                'time': '0.01s'
+                'time': '0.01s',
+                'url1': url1,
+                'url2': url2
             }
         })
     i += 1
@@ -86,35 +94,58 @@
 
 
     # 1: n人脸识别 导入底库
-    async def importNegative(self, args):
-        print('importNegative: ', args)
+    async def importBaseid(self, args):
+        print('importBaseid: ', args)
     time.sleep(2)
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 40,
+        'h': 15,
+        'data': {
+            'index': 0,
+            'fileName': ''
+        }
+    })
+    i = 1
+    while i <= 20:
+        win.run({
+            'function': 'importBaseid',
+            'data': {
+                'index': 0,
+                'fileName': 'cat.jpg'
+            }
+        })
+    i += 1
     return 'ok'
 
     # 1: n人脸识别 预测
     async def predictIII(self, args):
         print(args)
+    url1 = 'http://192.168.199.172:3000/images/t.jpg'
     win = await api.createWindow({
         'name': 'ResultWindow',
         'type': 'ResultWindow',
-        'w': 10,
-        'h': 10,
+        'w': 40,
+        'h': 15,
         'data': {
             'fileName': '',
             'flag': '是',
             'time': '0s',
-            'message': ''
+            'message': '',
+            'url1': ''
         }
     })
     i = 1
-    while i <= 1000:
+    while i <= 10:
         win.run({
             'function': 'FunctionIII',
             'data': {
                 'fileName': 'cat.jpg',
                 'flag': '是',
                 'time': '0.01s',
-                'message': '没有人脸'
+                'message': '没有人脸',
+                'url1': url1
             }
         })
     i += 1
@@ -125,23 +156,26 @@
     # 关键点检测
     async def predictIV(self, args):
         print(args)
+    url1 = 'http://192.168.199.172:3000/images/t.jpg'
     win = await api.createWindow({
         'name': 'ResultWindow',
         'type': 'ResultWindow',
-        'w': 10,
-        'h': 10,
+        'w': 40,
+        'h': 15,
         'data': {
             'fileName': '',
-            'keyPoint': ''
+            'keyPoint': '',
+            'url1': ''
         }
     })
     i = 1
-    while i <= 1000:
+    while i <= 10:
         win.run({
             'function': 'FunctionIV',
             'data': {
                 'fileName': 'cat.jpg',
-                'keyPoint': '[{x: 1, y: 1}, {x2: 2, y2: 2}]'
+                'keyPoint': '[{x: 1, y: 1}, {x2: 2, y2: 2}]',
+                'url1': url1
             }
         })
     i += 1
@@ -150,23 +184,26 @@
     # 活体检测
     async def predictV(self, args):
         print(args)
+    url1 = 'http://192.168.199.172:3000/images/t.jpg'
     win = await api.createWindow({
         'name': 'ResultWindow',
         'type': 'ResultWindow',
-        'w': 10,
-        'h': 10,
+        'w': 40,
+        'h': 15,
         'data': {
             'fileName': '',
-            'flag': ''
+            'flag': '',
+            'url1': url1
         }
     })
     i = 1
-    while i <= 1000:
+    while i <= 10:
         win.run({
             'function': 'FunctionV',
             'data': {
                 'fileName': 'cat.jpg',
-                'flag': '否'
+                'flag': '否',
+                'url1': url1
             }
         })
     i += 1
@@ -175,14 +212,16 @@
     # 图像质量检测
     async def predictVI(self, args):
         print(args)
+    url1 = 'http://192.168.199.172:3000/images/t.jpg'
     win = await api.createWindow({
         'name': 'ResultWindow',
         'type': 'ResultWindow',
-        'w': 10,
-        'h': 10,
+        'w': 40,
+        'h': 15,
         'data': {
             'fileName': '',
-            'message': ''
+            'message': '',
+            'url1': ''
         }
     })
     i = 1
@@ -191,7 +230,8 @@
             'function': 'FunctionVI',
             'data': {
                 'fileName': 'cat.jpg',
-                'message': '图像模糊,详细描述...'
+                'message': '图像模糊,详细描述...',
+                'url1': url1
             }
         })
     i += 1
