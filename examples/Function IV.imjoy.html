@@ -1,4 +1,4 @@
-﻿<docs lang="markdown">
+<docs lang="markdown">
 [TODO: write documentation for this plugin.]
 </docs>
 
@@ -15,9 +15,13 @@
   "inputs": null,
   "outputs": null,
   "env": "",
-  "requirements": [],
+"requirements": [
+  "https://unpkg.com/spectre.css/dist/spectre.min.css",
+  "https://unpkg.com/spectre.css/dist/spectre-exp.min.css",
+  "https://unpkg.com/spectre.css/dist/spectre-icons.min.css"
+  ],
   "dependencies": [],
-  "defaults": {"w": 20, "h": 10}
+  "defaults": {"w": 40, "h": 15}
 }
 </config>
 
@@ -28,17 +32,18 @@ let fileList= null
 let uploadUrl = 'http://192.168.199.172:3000/file_upload'
 let args = []
 let predictResult = null
+  let loading = document.getElementById('loading')
+  let text = document.getElementById('text')
+
 class ImJoyPlugin {
   async setup() {
 
   }
-    async handleFiles () {
-        let files = this.files
-        if (!files.length) {
-            fileList.innerHTML = "<p>No files selected!</p>";
-        } else {
-            fileList.innerHTML = files[0].name;
-        }
+    async handleFiles() {
+      let files = this.files
+      if (files.length) {
+        text.innerHTML = files[0].name
+      }
     }
   async run(my) {
     window.URL = window.URL || window.webkitURL;
@@ -59,14 +64,17 @@ class ImJoyPlugin {
 
     let fileClear = document.getElementById('fileClear')
     fileClear.addEventListener('click', event => {
-        fileList.innerHTML = "<p>No files selected!</p>";
+            text.innerHTML = 'No files selected!'
         fileElem.value = ''
         predictResult.innerHTML = ''
+        fileList.innerHTML = ''
     })
 
     let predict = document.getElementById('predict')
     predict.addEventListener('click', async event => {
         console.log(args)
+        loading.style.display = 'block'
+        text.innerHTML = '正在检测, 请稍等...'
         let res = await api.call('PythonServer', 'predictIV', args)
         console.log(res)
     })
@@ -77,6 +85,10 @@ class ImJoyPlugin {
         let files = document.getElementById('fileElem').files
         if (files && files.length > 0) {
             let url = uploadUrl
+
+            loading.style.display = 'block'
+            text.innerHTML = '正在上传, 请稍等...'
+
             for (let item of files) {
                 console.log(item)
                 let formData = new FormData()
@@ -89,7 +101,10 @@ class ImJoyPlugin {
                     console.log(JSON.parse(xhr.responseText))
                     
                     args.push(JSON.parse(xhr.responseText))
-                    predictResult.innerHTML = 'upload success!'
+                    // predictResult.innerHTML = 'upload success!'
+
+                    text.innerHTML = '上传成功!'
+                    loading.style.display = 'none'
                 }
                 xhr.onerror = function() {
                     console.log('fail')
@@ -109,7 +124,7 @@ api.export(new ImJoyPlugin())
 </script>
 
 <window lang="html">
-  <div>
+  <div class="container">
     <h2>Function IV 关键点检测</h2>
 
     <div>
@@ -118,17 +133,49 @@ api.export(new ImJoyPlugin())
         <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <br>
-        <div id="fileList">
-            <p>No file selected!</p>
+        <div class="padding-10-0">
+        <div class="display-flex">
+          <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+          <div><label id="text">No files selected!</label></div>
         </div>
-        <br>
-        <div id="predictResult">
-        </div>
+      </div>
+      <div class="columns col-gapless">
+        <div id="fileList" class="text-align-left column col-6" style="display:flex;"></div>
+        <div id="predictResult" class="column col-6 text-align-left" style="display:flex;"></div>
+      </div>
     </div>
   </div>
 </window>
 
 <style lang="css">
+ .container {
+    text-align: left;
+  }
 
+  li {
+    list-style: none;
+    margin: 20px 0;
+  }
+
+  img {
+    width: 200px !important;
+    height: 200px !important;
+    object-fit: contain;
+    border: 1px solid #eee !important;
+    border-radius: 4px;
+  }
+
+
+  .display-flex {
+    display: flex;
+  }
+
+  .display-none {
+    display: none;
+  }
+
+  .padding-10-0 {
+    padding: 10px 0;
+    margin: 4px 0;
+  }
 </style>
