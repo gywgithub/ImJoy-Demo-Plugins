@@ -1,86 +1,130 @@
 ﻿<docs lang="markdown">
-[TODO: write documentation for this plugin.]
+    [TODO: write documentation for this plugin.]
 </docs>
 
 <config lang="json">
-{
-  "name": "ResultWindow",
-  "type": "window",
-  "tags": [],
-  "ui": "",
-  "version": "0.1.0",
-  "api_version": "0.1.2",
-  "description": "Function Result Window",
-  "icon": "extension",
-  "inputs": null,
-  "outputs": null,
-  "runnable": false,
-  "env": "",
-  "requirements": [],
-  "dependencies": [],
-  "defaults": {"w": 20, "h": 10}
-}
+    {
+    "name": "ResultWindow",
+    "type": "window",
+    "tags": [],
+    "ui": "",
+    "version": "0.1.0",
+    "api_version": "0.1.2",
+    "description": "Function Result Window",
+    "icon": "extension",
+    "inputs": null,
+    "outputs": null,
+    "runnable": false,
+    "env": "",
+    "requirements": [
+    "https://unpkg.com/spectre.css/dist/spectre.min.css",
+    "https://unpkg.com/spectre.css/dist/spectre-exp.min.css",
+    "https://unpkg.com/spectre.css/dist/spectre-icons.min.css"
+    ],
+    "dependencies": [],
+    "defaults": {"w": 40, "h": 15}
+    }
 </config>
 
 <script lang="javascript">
-class ImJoyPlugin {
-  async setup() {
+    class ImJoyPlugin {
+        async setup() {
 
-  }
+        }
 
-  async run(my) {
-    console.log('running the window plugin ', my)
-    let obj = {
-            'FunctionI': {
-                'title': '人脸检测',
-                'text': 'FileName: ' + my.data.fileName + ' ;   在底库中是否存在: ' + my.data.flag + ' ;   耗时: ' + my.data.time + ' ;    ' + my.data.message
-            },
-            'FunctionII': {
-                'title': '1:1人脸核验',
-                'text': 'ID: ' + my.data.ID + ' ;   是否同一个人: ' + my.data.flag + ' ;   耗时: ' + my.data.time
-            },
-            'FunctionIII': {
-                'title': '1:n人脸识别',
-                'text': 'FileName: ' + my.data.fileName + ' ;   在底库中是否存在: ' + my.data.flag + ' ;   耗时: ' + my.data.time + ' ;    ' + my.data.message
-            },
-            'FunctionIV': {
-                'title': '关键点检测',
-                'text': 'FileName: ' + my.data.fileName + ' ;   关键点: ' + my.data.keyPoint
-            },
-            'FunctionV': {
-                'title': '活体检测',
-                'text': 'FileName: ' + my.data.fileName + ' ;   是否活体: ' + my.data.flag
-            },
-            'FunctionVI': {
-                'title': '图像质量检测',
-                'text': 'FileName: ' + my.data.fileName + ' ;   结果信息: ' + my.data.message
+        async run(my) {
+            console.log('running the window plugin ', my)
+            let obj = {
+                'FunctionI': {
+                    'title': '人脸检测',
+                    'text': 'FileName: ' + my.data.fileName + ' ;   在底库中是否存在: ' + my.data.flag + ' ;   耗时: ' +
+                        my.data.time + ' ;    ' + my.data.message
+                },
+                'FunctionII': {
+                    'title': '1:1人脸核验',
+                    'text': ['ID: ' + my.data.ID, '是否同一个人: ' + my.data.flag, '耗时: ' + my.data.time]
+                },
+                'importBaseid': {
+                    'title': '底库导入',
+                    'text': ['FileName: ' + my.data.fileName + ' ;   index: ' + my.data.index]
+                },
+                'FunctionIII': {
+                    'title': '1:n人脸识别',
+                    'text': ['FileName: ' + my.data.fileName, '在底库中是否存在: ' + my.data.flag, '耗时: ' + my.data
+                        .time, my.data.message
+                    ]
+                },
+                'FunctionIV': {
+                    'title': '关键点检测',
+                    'text': ['FileName: ' + my.data.fileName, '关键点: ' + my.data.keyPoint]
+                },
+                'FunctionV': {
+                    'title': '活体检测',
+                    'text': ['FileName: ' + my.data.fileName, '是否活体: ' + my.data.flag]
+                },
+                'FunctionVI': {
+                    'title': '图像质量检测',
+                    'text': ['FileName: ' + my.data.fileName, '结果信息: ' + my.data.message]
+                }
+            }
+            if (my.function) {
+                let h2 = document.getElementById('h2')
+                h2.innerHTML = obj[my.function].title
+                let container = document.getElementById('result')
+
+                let divImg = document.createElement('div')
+                divImg.style.display = 'flex'
+                divImg.style.marginBottom = '10'
+                container.appendChild(divImg)
+
+                if (my.data.url1) {
+                    let div1 = document.createElement('div')
+                    let img = document.createElement('img')
+                    img.height = 200
+                    img.src = my.data.url1
+                    div1.appendChild(img)
+                    divImg.appendChild(div1)
+                }
+
+                if (my.data.url2) {
+                    let div2 = document.createElement('div')
+                    let img2 = document.createElement('img')
+                    img2.height = 200
+                    img2.src = my.data.url2
+                    div2.appendChild(img2)
+                    divImg.appendChild(div2)
+                }
+
+                let div3 = document.createElement('div')
+                let arr = obj[my.function].text
+                for (var i = 0; i < arr.length; i++) {
+                    let p = document.createElement('p')
+                    p.innerHTML = arr[i]
+                    div3.appendChild(p)
+                }
+                divImg.appendChild(div3)
             }
         }
-    if (my.function) {
-        let h2 = document.getElementById('h2')   
-        h2.innerHTML = obj[my.function].title
     }
-    const node = document.createElement("li");  
-    if (my.data.fileName || my.data.ID) {
-        const textnode = document.createTextNode(obj[my.function].text);
-        node.appendChild(textnode);                            
-        document.getElementById("myList").appendChild(node);
-        if(my.data.callback) my.data.callback('hello from the window plugin')
-    }
-    
-  }
-}
 
-api.export(new ImJoyPlugin())
+    api.export(new ImJoyPlugin())
 </script>
 
 <window lang="html">
-  <div>
-    <h2 id="h2">检测结果</h2>
-    <div id="myList"></div>
-  </div>
+    <div class="container">
+        <h2 id="h2">检测结果</h2>
+        <div id="myList"></div>
+        <div id="result"></div>
+    </div>
 </window>
 
 <style lang="css">
-
+    img {
+        width: 200px !important;
+        height: 200px !important;
+        object-fit: contain;
+        border: 1px solid #eee !important;
+        border-radius: 4px;
+        margin-right: 10px
+    }
 </style>

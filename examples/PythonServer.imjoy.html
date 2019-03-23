@@ -1,23 +1,23 @@
 ﻿<docs lang="markdown">
-[TODO: write documentation for this plugin.]
+    [TODO: write documentation for this plugin.]
 </docs>
 
 <config lang="json">
-{
-  "name": "PythonServer",
-  "type": "native-python",
-  "version": "0.1.0",
-  "api_version": "0.1.2",
-  "description": "[TODO: describe this plugin with one sentence.]",
-  "tags": [],
-  "ui": "",
-  "inputs": null,
-  "outputs": null,
-  "flags": [],
-  "icon": "extension",
-  "env": "",
-  "requirements": [],
-  "dependencies": [
+    {
+    "name": "PythonServer",
+    "type": "native-python",
+    "version": "0.1.0",
+    "api_version": "0.1.2",
+    "description": "[TODO: describe this plugin with one sentence.]",
+    "tags": [],
+    "ui": "",
+    "inputs": null,
+    "outputs": null,
+    "flags": [],
+    "icon": "extension",
+    "env": "",
+    "requirements": [],
+    "dependencies": [
     "gywgithub/ImJoy-Demo-Plugins:ResultWindow",
     "gywgithub/ImJoy-Demo-Plugins:Function I",
     "gywgithub/ImJoy-Demo-Plugins:Function II",
@@ -26,15 +26,15 @@
     "gywgithub/ImJoy-Demo-Plugins:Function V",
     "gywgithub/ImJoy-Demo-Plugins:Function VI"
     ]
-}
+    }
 </config>
 
 <script lang="python">
-import numpy as np
-import random
-import time
-class ImJoyPlugin():
-    def setup(self):
+    import numpy as np
+    import random
+    import time
+    class ImJoyPlugin():
+        def setup(self):
         print('setup in python')
 
     async def run(self, my):
@@ -42,99 +42,160 @@ class ImJoyPlugin():
 
 
     # 人脸检测
-    async def predict (self, list):
+    async def predict(self, list):
         res = []
-        for item in list:
-            print(item)
-            res.append({'IOU': random.random(), 'fileName': item.filename, 'predictUrl': item.url, 'message': ''})
+    for item in list:
+        print(item)
+    res.append({
+        'IOU': random.random(),
+        'fileName': item.filename,
+        'predictUrl': item.url,
+        'message': ''
+    })
 
-        print(res)
-        time.sleep(3)
-        return res
+    print(res)
+    time.sleep(3)
+    return res
 
-    # 1:1 人脸核验
-    async def predictII (self, args):
+    # 1: 1 人脸核验
+    async def predictII(self, args):
         print(args)
-        win = await api.createWindow({
-            'name': 'ResultWindow',
-            'type': 'ResultWindow',
-            'w':10, 'h':10,
-            'data':{'ID': 0, 'flag': '是', 'time': '0s'}
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 10,
+        'h': 10,
+        'data': {
+            'ID': 0,
+            'flag': '是',
+            'time': '0s'
+        }
+    })
+    i = 1
+    while i <= 1000:
+        win.run({
+            'function': 'FunctionII',
+            'data': {
+                'ID': i,
+                'flag': '是',
+                'time': '0.01s'
+            }
         })
-        i = 1
-        while i <= 1000:
-            win.run({'function': 'FunctionII', 'data':{'ID': i, 'flag': '是', 'time': '0.01s'}})
-            i += 1
-        return '1'
+    i += 1
+    return '1'
 
-        
-    # 1:n人脸识别 导入底库
-    async def importNegative (self, args):
+
+    # 1: n人脸识别 导入底库
+    async def importNegative(self, args):
         print('importNegative: ', args)
-        time.sleep(2)
-        return 'ok'
+    time.sleep(2)
+    return 'ok'
 
-    # 1:n人脸识别 预测
-    async def predictIII (self, args):
+    # 1: n人脸识别 预测
+    async def predictIII(self, args):
         print(args)
-        win = await api.createWindow({
-            'name': 'ResultWindow',
-            'type': 'ResultWindow',
-            'w':10, 'h':10,
-            'data':{'fileName': '', 'flag': '是', 'time': '0s', 'message': ''}
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 10,
+        'h': 10,
+        'data': {
+            'fileName': '',
+            'flag': '是',
+            'time': '0s',
+            'message': ''
+        }
+    })
+    i = 1
+    while i <= 1000:
+        win.run({
+            'function': 'FunctionIII',
+            'data': {
+                'fileName': 'cat.jpg',
+                'flag': '是',
+                'time': '0.01s',
+                'message': '没有人脸'
+            }
         })
-        i = 1
-        while i <= 1000:
-            win.run({'function': 'FunctionIII', 'data':{'fileName': 'cat.jpg', 'flag': '是', 'time': '0.01s', 'message': '没有人脸'}})
-            i += 1
-        return '1'
+    i += 1
+    return '1'
 
 
 
     # 关键点检测
-    async def predictIV (self, args):
+    async def predictIV(self, args):
         print(args)
-        win = await api.createWindow({
-            'name': 'ResultWindow',
-            'type': 'ResultWindow',
-            'w':10, 'h':10,
-            'data':{'fileName': '', 'keyPoint': ''}
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 10,
+        'h': 10,
+        'data': {
+            'fileName': '',
+            'keyPoint': ''
+        }
+    })
+    i = 1
+    while i <= 1000:
+        win.run({
+            'function': 'FunctionIV',
+            'data': {
+                'fileName': 'cat.jpg',
+                'keyPoint': '[{x: 1, y: 1}, {x2: 2, y2: 2}]'
+            }
         })
-        i = 1
-        while i <= 1000:
-            win.run({'function': 'FunctionIV', 'data':{'fileName': 'cat.jpg', 'keyPoint': '[{x: 1, y: 1}, {x2: 2, y2: 2}]'}})
-            i += 1
-        return '1'
+    i += 1
+    return '1'
 
     # 活体检测
-    async def predictV (self, args):
+    async def predictV(self, args):
         print(args)
-        win = await api.createWindow({
-            'name': 'ResultWindow',
-            'type': 'ResultWindow',
-            'w':10, 'h':10,
-            'data':{'fileName': '', 'flag': ''}
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 10,
+        'h': 10,
+        'data': {
+            'fileName': '',
+            'flag': ''
+        }
+    })
+    i = 1
+    while i <= 1000:
+        win.run({
+            'function': 'FunctionV',
+            'data': {
+                'fileName': 'cat.jpg',
+                'flag': '否'
+            }
         })
-        i = 1
-        while i <= 1000:
-            win.run({'function': 'FunctionV', 'data':{'fileName': 'cat.jpg', 'flag': '否'}})
-            i += 1
-        return '1'
+    i += 1
+    return '1'
 
     # 图像质量检测
-    async def predictVI (self, args):
+    async def predictVI(self, args):
         print(args)
-        win = await api.createWindow({
-            'name': 'ResultWindow',
-            'type': 'ResultWindow',
-            'w':10, 'h':10,
-            'data':{'fileName': '', 'message': ''}
+    win = await api.createWindow({
+        'name': 'ResultWindow',
+        'type': 'ResultWindow',
+        'w': 10,
+        'h': 10,
+        'data': {
+            'fileName': '',
+            'message': ''
+        }
+    })
+    i = 1
+    while i <= 25:
+        win.run({
+            'function': 'FunctionVI',
+            'data': {
+                'fileName': 'cat.jpg',
+                'message': '图像模糊,详细描述...'
+            }
         })
-        i = 1
-        while i <= 25:
-            win.run({'function': 'FunctionVI', 'data':{'fileName': 'cat.jpg', 'message': '图像模糊,详细描述...'}})
-            i += 1
-        return '1'
+    i += 1
+    return '1'
 
-api.export(ImJoyPlugin())
+    api.export(ImJoyPlugin())
 </script>

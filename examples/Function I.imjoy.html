@@ -25,98 +25,26 @@
 </config>
 <script lang="javascript">
     let fileSelect = null
-let fileElem = null
-let fileList= null
-let uploadUrl = 'http://192.168.199.172:3000/file_upload'
-let args = []
-let loading = document.getElementById('loading')
-let text = document.getElementById('text')
-let nameArr = []
-class ImJoyPlugin {
-  async setup() {
+    let fileElem = null
+    let fileList = null
+    let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+    let args = []
+    let loading = document.getElementById('loading')
+    let text = document.getElementById('text')
+    let nameArr = []
+    class ImJoyPlugin {
+        async setup() {
 
-  }
-
-    async handleFiles () {
-        let files = this.files
-        if (!files.length) {
-        } else {
-            text.innerHTML = ''
-            const list = document.createElement("div");
-            fileList.appendChild(list);
-            for (let i = 0; i < files.length; i++) {
-                nameArr.push(files[i].name)
-                const container = document.createElement("div");
-                container.style.display = "flex"
-                container.style.marginBottom = "10px"
-                list.appendChild(container);
-
-                const divImg = document.createElement("div");
-                const img = document.createElement("img");
-                img.src = window.URL.createObjectURL(files[i]);
-                img.height = 200;
-                img.onload = function() {
-                    window.URL.revokeObjectURL(this.src);
-                }
-                divImg.appendChild(img);
-                container.appendChild(divImg);
-
-
-                const info = document.createElement("div");
-                info.innerHTML = files[i].name;
-                info.style.paddingLeft = "10px"
-                container.appendChild(info);
-            }
         }
-    }
 
-  async run(my) {
-    window.URL = window.URL || window.webkitURL;
-
-    fileSelect = document.getElementById("fileSelect");
-        fileElem = document.getElementById("fileElem");
-        fileList = document.getElementById("fileList");
-        let predictResult = document.getElementById('predictResult')
-
-    fileSelect.addEventListener("click", function(e) {
-        if (fileElem) {
-            fileElem.click();
-        }
-        e.preventDefault(); // prevent navigation to "#"
-    }, false);
-
-    fileElem.addEventListener('change', this.handleFiles, false)
-
-    let fileClear = document.getElementById('fileClear')
-    fileClear.addEventListener('click', event => {
-        text.innerHTML = 'No files selected!'
-        fileElem.value = ''
-        predictResult.innerHTML = ''
-        fileList.innerHTML = ''
-    })
-
-    let predict = document.getElementById('predict')
-    predict.addEventListener('click', async event => {
-        console.log('predict args: ', args)
-        loading.style.display = 'block'
-        text.innerHTML = '正在检测, 请稍等...'
-        let res = await api.call('PythonServer', 'predict', args)
-        console.log('predict: ', res)
-        loading.style.display = 'none'
-        text.innerHTML = '检测结束!'
-        if (res && res.length > 0) {
-            console.log(nameArr)
-            let arr = []
-            arr.length = 5
-            for (let i = 0; i < res.length; i++) {
-                let fn = res[i].fileName
-                let index = nameArr.indexOf(fn)
-                arr.splice(index, 1, res[i])
-            }
-            console.log('arr for: ', arr)
-            const list = document.createElement("div");
-                predictResult.appendChild(list);
-                for (let i = 0; i < arr.length; i++) {
+        async handleFiles() {
+            let files = this.files
+            if (!files.length) {} else {
+                text.innerHTML = ''
+                const list = document.createElement("div");
+                fileList.appendChild(list);
+                for (let i = 0; i < files.length; i++) {
+                    nameArr.push(files[i].name)
                     const container = document.createElement("div");
                     container.style.display = "flex"
                     container.style.marginBottom = "10px"
@@ -124,74 +52,145 @@ class ImJoyPlugin {
 
                     const divImg = document.createElement("div");
                     const img = document.createElement("img");
-                    img.src = arr[i].url1
+                    img.src = window.URL.createObjectURL(files[i]);
                     img.height = 200;
-                    img.onload = function() {
+                    img.onload = function () {
                         window.URL.revokeObjectURL(this.src);
                     }
                     divImg.appendChild(img);
                     container.appendChild(divImg);
 
+
                     const info = document.createElement("div");
-                    const p1 = document.createElement("p")
-                    p1.innerHTML = arr[i].fileName
+                    info.innerHTML = files[i].name;
                     info.style.paddingLeft = "10px"
-                    info.appendChild(p1)
-
-                    const p2 = document.createElement("p")
-                    p2.innerHTML = "IOU: " + arr[i].IOU
-                    info.style.paddingLeft = "10px"
-                    info.appendChild(p2)
-
-                    const p3 = document.createElement("p")
-                    p3.innerHTML = arr[i].message
-                    info.style.paddingLeft = "10px"
-                    info.appendChild(p3)
                     container.appendChild(info);
                 }
-                
-        }
-    })
-
-    let button = document.getElementById('upload')
-    button.addEventListener('click', event => {
-        args = []
-        let files = document.getElementById('fileElem').files
-        console.log('upload files: ', files)
-        if (files && files.length > 0) {
-            let url = uploadUrl
-
-            loading.style.display = 'block'
-            text.innerHTML = '正在上传, 请稍等...'
-            for (let i = 0; i < files.length; i++) {
-                let formData = new FormData()
-                formData.append('image', files[i])
-                formData.append('function', 'FunctionI')
-                let xhr = new XMLHttpRequest()
-
-                xhr.onload = function() {
-                    console.log(JSON.parse(xhr.responseText))
-                    args.push(JSON.parse(xhr.responseText))
-                    if (i === files.length - 1) {
-                        text.innerHTML = '上传成功!'
-                        loading.style.display = 'none'
-                    }
-                }
-                xhr.onerror = function() {
-                    console.log('fail')
-                }
-                xhr.open('post', url, true)
-                xhr.send(formData)
             }
-        } else {
-            console.log('请选择文件')
         }
-    })
 
-  }
-}
+        async run(my) {
+            window.URL = window.URL || window.webkitURL;
 
-api.export(new ImJoyPlugin())
+            fileSelect = document.getElementById("fileSelect");
+            fileElem = document.getElementById("fileElem");
+            fileList = document.getElementById("fileList");
+            let predictResult = document.getElementById('predictResult')
+
+            fileSelect.addEventListener("click", function (e) {
+                if (fileElem) {
+                    fileElem.click();
+                }
+                e.preventDefault();
+            }, false);
+
+            fileElem.addEventListener('change', this.handleFiles, false)
+
+            let fileClear = document.getElementById('fileClear')
+            fileClear.addEventListener('click', event => {
+                text.innerHTML = 'No files selected!'
+                fileElem.value = ''
+                predictResult.innerHTML = ''
+                fileList.innerHTML = ''
+            })
+
+            let predict = document.getElementById('predict')
+            predict.addEventListener('click', async event => {
+                console.log('predict args: ', args)
+                loading.style.display = 'block'
+                text.innerHTML = '正在检测, 请稍等...'
+                let res = await api.call('PythonServer', 'predict', args)
+                console.log('predict: ', res)
+                loading.style.display = 'none'
+                text.innerHTML = '检测结束!'
+                if (res && res.length > 0) {
+                    console.log(nameArr)
+                    let arr = []
+                    arr.length = 5
+                    for (let i = 0; i < res.length; i++) {
+                        let fn = res[i].fileName
+                        let index = nameArr.indexOf(fn)
+                        arr.splice(index, 1, res[i])
+                    }
+                    console.log('arr for: ', arr)
+                    const list = document.createElement("div");
+                    predictResult.appendChild(list);
+                    for (let i = 0; i < arr.length; i++) {
+                        const container = document.createElement("div");
+                        container.style.display = "flex"
+                        container.style.marginBottom = "10px"
+                        list.appendChild(container);
+
+                        const divImg = document.createElement("div");
+                        const img = document.createElement("img");
+                        img.src = arr[i].url1
+                        img.height = 200;
+                        img.onload = function () {
+                            window.URL.revokeObjectURL(this.src);
+                        }
+                        divImg.appendChild(img);
+                        container.appendChild(divImg);
+
+                        const info = document.createElement("div");
+                        const p1 = document.createElement("p")
+                        p1.innerHTML = arr[i].fileName
+                        info.style.paddingLeft = "10px"
+                        info.appendChild(p1)
+
+                        const p2 = document.createElement("p")
+                        p2.innerHTML = "IOU: " + arr[i].IOU
+                        info.style.paddingLeft = "10px"
+                        info.appendChild(p2)
+
+                        const p3 = document.createElement("p")
+                        p3.innerHTML = arr[i].message
+                        info.style.paddingLeft = "10px"
+                        info.appendChild(p3)
+                        container.appendChild(info);
+                    }
+
+                }
+            })
+
+            let button = document.getElementById('upload')
+            button.addEventListener('click', event => {
+                args = []
+                let files = document.getElementById('fileElem').files
+                console.log('upload files: ', files)
+                if (files && files.length > 0) {
+                    let url = uploadUrl
+
+                    loading.style.display = 'block'
+                    text.innerHTML = '正在上传, 请稍等...'
+                    for (let i = 0; i < files.length; i++) {
+                        let formData = new FormData()
+                        formData.append('image', files[i])
+                        formData.append('function', 'FunctionI')
+                        let xhr = new XMLHttpRequest()
+
+                        xhr.onload = function () {
+                            console.log(JSON.parse(xhr.responseText))
+                            args.push(JSON.parse(xhr.responseText))
+                            if (i === files.length - 1) {
+                                text.innerHTML = '上传成功!'
+                                loading.style.display = 'none'
+                            }
+                        }
+                        xhr.onerror = function () {
+                            console.log('fail')
+                        }
+                        xhr.open('post', url, true)
+                        xhr.send(formData)
+                    }
+                } else {
+                    console.log('请选择文件')
+                }
+            })
+
+        }
+    }
+
+    api.export(new ImJoyPlugin())
 </script>
 <window lang="html">
     <div class="container">
@@ -204,7 +203,8 @@ api.export(new ImJoyPlugin())
             <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
             <div class="padding-10-0">
                 <div class="display-flex">
-                    <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
                     <div><label id="text">No files selected!</label></div>
                 </div>
             </div>
@@ -217,34 +217,34 @@ api.export(new ImJoyPlugin())
 
 </window>
 <style lang="css">
-.container {
-    text-align: left;
-}
+    .container {
+        text-align: left;
+    }
 
-li {
-    list-style: none;
-    margin: 20px 0;
-}
+    li {
+        list-style: none;
+        margin: 20px 0;
+    }
 
-img {
-    width: 200px !important;
-    height: 200px !important;
-    object-fit: contain;
-    border: 1px solid #eee !important;
-    border-radius: 4px;
-}
+    img {
+        width: 200px !important;
+        height: 200px !important;
+        object-fit: contain;
+        border: 1px solid #eee !important;
+        border-radius: 4px;
+    }
 
 
-.display-flex {
-    display: flex;
-}
+    .display-flex {
+        display: flex;
+    }
 
-.display-none {
-    display: none;
-}
+    .display-none {
+        display: none;
+    }
 
-.padding-10-0 {
-    padding: 10px 0;
-    margin: 4px 0;
-}
+    .padding-10-0 {
+        padding: 10px 0;
+        margin: 4px 0;
+    }
 </style>

@@ -1,170 +1,169 @@
 <docs lang="markdown">
-[TODO: write documentation for this plugin.]
+    [TODO: write documentation for this plugin.]
 </docs>
 
 <config lang="json">
-{
-  "name": "Function VI",
-  "type": "window",
-  "tags": [],
-  "ui": "",
-  "version": "0.1.0",
-  "api_version": "0.1.2",
-  "description": "图像质量检测",
-  "icon": "extension",
-  "inputs": null,
-  "outputs": null,
-  "env": "",
-  "requirements": [
-  "https://unpkg.com/spectre.css/dist/spectre.min.css",
-  "https://unpkg.com/spectre.css/dist/spectre-exp.min.css",
-  "https://unpkg.com/spectre.css/dist/spectre-icons.min.css"
-  ],
-  "dependencies": [],
-  "defaults": {"w": 40, "h": 15}
-}
+    {
+    "name": "Function VI",
+    "type": "window",
+    "tags": [],
+    "ui": "",
+    "version": "0.1.0",
+    "api_version": "0.1.2",
+    "description": "图像质量检测",
+    "icon": "extension",
+    "inputs": null,
+    "outputs": null,
+    "env": "",
+    "requirements": [
+    "https://unpkg.com/spectre.css/dist/spectre.min.css",
+    "https://unpkg.com/spectre.css/dist/spectre-exp.min.css",
+    "https://unpkg.com/spectre.css/dist/spectre-icons.min.css"
+    ],
+    "dependencies": [],
+    "defaults": {"w": 40, "h": 15}
+    }
 </config>
 
 <script lang="javascript">
-let fileSelect = null
-let fileElem = null
-let fileList= null
-let uploadUrl = 'http://192.168.199.172:3000/file_upload'
-let args = []
-let predictResult = null
-  let loading = document.getElementById('loading')
-  let text = document.getElementById('text')
-  let nameArr = []
-class ImJoyPlugin {
-  async setup() {
+    let fileSelect = null
+    let fileElem = null
+    let fileList = null
+    let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+    let args = []
+    let predictResult = null
+    let loading = document.getElementById('loading')
+    let text = document.getElementById('text')
+    let nameArr = []
+    class ImJoyPlugin {
+        async setup() {
 
-  }
+        }
 
-       async handleFiles () {
-        let files = this.files
-        if (!files.length) {
-        } else {
-            text.innerHTML = ''
-            const list = document.createElement("div");
-            fileList.appendChild(list);
-            for (let i = 0; i < files.length; i++) {
-                nameArr.push(files[i].name)
-                const container = document.createElement("div");
-                container.style.display = "flex"
-                container.style.marginBottom = "10px"
-                list.appendChild(container);
+        async handleFiles() {
+            let files = this.files
+            if (!files.length) {} else {
+                text.innerHTML = ''
+                const list = document.createElement("div");
+                fileList.appendChild(list);
+                for (let i = 0; i < files.length; i++) {
+                    nameArr.push(files[i].name)
+                    const container = document.createElement("div");
+                    container.style.display = "flex"
+                    container.style.marginBottom = "10px"
+                    list.appendChild(container);
 
-                const divImg = document.createElement("div");
-                const img = document.createElement("img");
-                img.src = window.URL.createObjectURL(files[i]);
-                img.height = 200;
-                img.onload = function() {
-                    window.URL.revokeObjectURL(this.src);
+                    const divImg = document.createElement("div");
+                    const img = document.createElement("img");
+                    img.src = window.URL.createObjectURL(files[i]);
+                    img.height = 200;
+                    img.onload = function () {
+                        window.URL.revokeObjectURL(this.src);
+                    }
+                    divImg.appendChild(img);
+                    container.appendChild(divImg);
+
+
+                    const info = document.createElement("div");
+                    info.innerHTML = files[i].name;
+                    info.style.paddingLeft = "10px"
+                    container.appendChild(info);
                 }
-                divImg.appendChild(img);
-                container.appendChild(divImg);
-
-
-                const info = document.createElement("div");
-                info.innerHTML = files[i].name;
-                info.style.paddingLeft = "10px"
-                container.appendChild(info);
             }
+        }
+        async run(my) {
+            window.URL = window.URL || window.webkitURL;
+
+            fileSelect = document.getElementById("fileSelect");
+            fileElem = document.getElementById("fileElem");
+            fileList = document.getElementById("fileList");
+            predictResult = document.getElementById('predictResult')
+
+            fileSelect.addEventListener("click", function (e) {
+                if (fileElem) {
+                    fileElem.click();
+                }
+                e.preventDefault();
+            }, false);
+
+            fileElem.addEventListener('change', this.handleFiles, false)
+
+            let fileClear = document.getElementById('fileClear')
+            fileClear.addEventListener('click', event => {
+                text.innerHTML = 'No files selected!'
+                fileElem.value = ''
+                predictResult.innerHTML = ''
+                fileList.innerHTML = ''
+            })
+
+            let predict = document.getElementById('predict')
+            predict.addEventListener('click', async event => {
+                console.log(args)
+                loading.style.display = 'block'
+                text.innerHTML = '正在检测, 请稍等...'
+                let res = await api.call('PythonServer', 'predictVI', args)
+                console.log(res)
+            })
+
+            let button = document.getElementById('upload')
+            button.addEventListener('click', event => {
+                args = []
+                let files = document.getElementById('fileElem').files
+                if (files && files.length > 0) {
+                    let url = uploadUrl
+
+                    loading.style.display = 'block'
+                    text.innerHTML = '正在上传, 请稍等...'
+
+                    for (let i = 0; i < files.length; i++) {
+                        console.log(files[i])
+                        let formData = new FormData()
+                        formData.append('image', files[i])
+                        formData.append('function', 'FunctionVI')
+                        let xhr = new XMLHttpRequest()
+
+                        xhr.onload = function () {
+                            console.log('ok')
+                            console.log(JSON.parse(xhr.responseText))
+
+                            args.push(JSON.parse(xhr.responseText))
+                            if (i === files.length - 1) {
+                                text.innerHTML = '上传成功!'
+                                loading.style.display = 'none'
+                            }
+                        }
+                        xhr.onerror = function () {
+                            console.log('fail')
+                        }
+                        xhr.open('post', url, true)
+                        xhr.send(formData)
+                    }
+                } else {
+                    console.log('请选择文件')
+                }
+            })
+
         }
     }
-  async run(my) {
-    window.URL = window.URL || window.webkitURL;
 
-    fileSelect = document.getElementById("fileSelect");
-        fileElem = document.getElementById("fileElem");
-        fileList = document.getElementById("fileList");
-        predictResult = document.getElementById('predictResult')
-
-    fileSelect.addEventListener("click", function(e) {
-        if (fileElem) {
-            fileElem.click();
-        }
-        e.preventDefault(); // prevent navigation to "#"
-    }, false);
-
-    fileElem.addEventListener('change', this.handleFiles, false)
-
-    let fileClear = document.getElementById('fileClear')
-    fileClear.addEventListener('click', event => {
-                text.innerHTML = 'No files selected!'
-        fileElem.value = ''
-        predictResult.innerHTML = ''
-        fileList.innerHTML = ''
-    })
-
-    let predict = document.getElementById('predict')
-    predict.addEventListener('click', async event => {
-        console.log(args)
-        loading.style.display = 'block'
-        text.innerHTML = '正在检测, 请稍等...'
-        let res = await api.call('PythonServer', 'predictVI', args)
-        console.log(res)
-    })
-
-    let button = document.getElementById('upload')
-    button.addEventListener('click', event => {
-        args = []
-        let files = document.getElementById('fileElem').files
-        if (files && files.length > 0) {
-            let url = uploadUrl
-
-            loading.style.display = 'block'
-            text.innerHTML = '正在上传, 请稍等...'
-
-            for (let i = 0; i < files.length; i++) {
-                console.log(files[i])
-                let formData = new FormData()
-                formData.append('image', files[i])
-                formData.append('function', 'FunctionVI')
-                let xhr = new XMLHttpRequest()
-
-                xhr.onload = function() {
-                    console.log('ok')
-                    console.log(JSON.parse(xhr.responseText))
-                    
-                    args.push(JSON.parse(xhr.responseText))
-                    // predictResult.innerHTML = 'upload success!'
-                    if (i === files.length - 1) {
-                        text.innerHTML = '上传成功!'
-                        loading.style.display = 'none'
-                    }
-                }
-                xhr.onerror = function() {
-                    console.log('fail')
-                }
-                xhr.open('post', url, true)
-                xhr.send(formData)
-            }
-        } else {
-            console.log('请选择文件')
-        }
-    })
-    
-  }
-}
-
-api.export(new ImJoyPlugin())
+    api.export(new ImJoyPlugin())
 </script>
 
 <window lang="html">
-  <div class="container">
-     <h2>Function VI 图像质量检测</h2>
+    <div class="container">
+        <h2>Function VI 图像质量检测</h2>
 
-    <div>
-        <input type="file" id="fileElem" multiple accept="image/*"  style="display:none">
-        <a href="#" id="fileSelect">Select file</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <div>
+            <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
+            <a href="#" id="fileSelect">Select file</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
 
-        <div class="padding-10-0">
+            <div class="padding-10-0">
                 <div class="display-flex">
-                    <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                    <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
                     <div><label id="text">No files selected!</label></div>
                 </div>
             </div>
@@ -172,40 +171,40 @@ api.export(new ImJoyPlugin())
                 <div id="fileList" class="text-align-left column col-6" style="display:flex;"></div>
                 <div id="predictResult" class="column col-6 text-align-left" style="display:flex;"></div>
             </div>
-            
+
+        </div>
     </div>
-  </div>
 </window>
 
 <style lang="css">
-.container {
-    text-align: left;
-}
+    .container {
+        text-align: left;
+    }
 
-li {
-    list-style: none;
-    margin: 20px 0;
-}
+    li {
+        list-style: none;
+        margin: 20px 0;
+    }
 
-img {
-    width: 200px !important;
-    height: 200px !important;
-    object-fit: contain;
-    border: 1px solid #eee !important;
-    border-radius: 4px;
-}
+    img {
+        width: 200px !important;
+        height: 200px !important;
+        object-fit: contain;
+        border: 1px solid #eee !important;
+        border-radius: 4px;
+    }
 
 
-.display-flex {
-    display: flex;
-}
+    .display-flex {
+        display: flex;
+    }
 
-.display-none {
-    display: none;
-}
+    .display-none {
+        display: none;
+    }
 
-.padding-10-0 {
-    padding: 10px 0;
-    margin: 4px 0;
-}
+    .padding-10-0 {
+        padding: 10px 0;
+        margin: 4px 0;
+    }
 </style>

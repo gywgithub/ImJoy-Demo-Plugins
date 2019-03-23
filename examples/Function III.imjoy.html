@@ -1,9 +1,9 @@
 <docs lang="markdown">
-[TODO: write documentation for this plugin.]
+  [TODO: write documentation for this plugin.]
 </docs>
 
 <config lang="json">
-{
+  {
   "name": "Function III",
   "type": "window",
   "tags": [],
@@ -22,67 +22,64 @@
   ],
   "dependencies": [],
   "defaults": {"w": 40, "h": 15}
-}
+  }
 </config>
 
 <script lang="javascript">
-let fileSelect = null
-let fileElem = null
-let fileList= null
-let uploadUrl = 'http://192.168.199.172:3000/file_upload'
-let args = []
-let predictResult = null
-let loading = document.getElementById('loading')
+  let fileSelect = null
+  let fileElem = null
+  let fileList = null
+  let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+  let args = []
+  let predictResult = null
+  let loading = document.getElementById('loading')
   let text = document.getElementById('text')
-class ImJoyPlugin {
-  async setup() {
+  class ImJoyPlugin {
+    async setup() {
 
-  }
+    }
     async handleFiles() {
       let files = this.files
       if (files.length) {
         text.innerHTML = files[0].name
       }
     }
-  async run(my) {
-    window.URL = window.URL || window.webkitURL;
+    async run(my) {
+      window.URL = window.URL || window.webkitURL;
 
-    fileSelect = document.getElementById("fileSelect");
-        fileElem = document.getElementById("fileElem");
-        fileList = document.getElementById("fileList");
-        predictResult = document.getElementById('predictResult')
+      fileSelect = document.getElementById("fileSelect");
+      fileElem = document.getElementById("fileElem");
+      fileList = document.getElementById("fileList");
+      predictResult = document.getElementById('predictResult')
 
-    fileSelect.addEventListener("click", function(e) {
+      fileSelect.addEventListener("click", function (e) {
         if (fileElem) {
-            fileElem.click();
+          fileElem.click();
         }
-        e.preventDefault(); // prevent navigation to "#"
-    }, false);
+        e.preventDefault();
+      }, false);
 
-    fileElem.addEventListener('change', this.handleFiles, false)
+      fileElem.addEventListener('change', this.handleFiles, false)
 
-    let fileClear = document.getElementById('fileClear')
-    fileClear.addEventListener('click', event => {
-        // fileList.innerHTML = "<p>No files selected!</p>";
-        // fileElem.value = ''
-        // predictResult.innerHTML = ''
+      let fileClear = document.getElementById('fileClear')
+      fileClear.addEventListener('click', event => {
         text.innerHTML = 'No files selected!'
         fileElem.value = ''
         predictResult.innerHTML = ''
         fileList.innerHTML = ''
-    })
+      })
 
-    let predict = document.getElementById('predict')
-    predict.addEventListener('click', async event => {
+      let predict = document.getElementById('predict')
+      predict.addEventListener('click', async event => {
         console.log(args)
         loading.style.display = 'block'
         text.innerHTML = '正在检测, 请稍等...'
         let res = await api.call('PythonServer', 'predictIII', args)
         console.log(res)
-    })
+      })
 
-    let importBaseid = document.getElementById('importBaseid')
-    importBaseid.addEventListener('click', async event => {
+      let importBaseid = document.getElementById('importBaseid')
+      importBaseid.addEventListener('click', async event => {
         console.log(args)
 
         loading.style.display = 'block'
@@ -90,54 +87,52 @@ class ImJoyPlugin {
 
         let res = await api.call('PythonServer', 'importBaseid', args)
         console.log(res)
-        // predictResult.innerHTML = 'import negative success!'
 
         loading.style.display = 'none'
         text.innerHTML = '底库导入成功!'
-    })
+      })
 
-    let button = document.getElementById('upload')
-    button.addEventListener('click', event => {
+      let button = document.getElementById('upload')
+      button.addEventListener('click', event => {
         args = []
         let files = document.getElementById('fileElem').files
         if (files && files.length > 0) {
-            let url = uploadUrl
+          let url = uploadUrl
 
-            loading.style.display = 'block'
-            text.innerHTML = '正在上传, 请稍等...'
+          loading.style.display = 'block'
+          text.innerHTML = '正在上传, 请稍等...'
 
-            for (let item of files) {
-                console.log(item)
-                let formData = new FormData()
-                formData.append('image', item)
-                formData.append('function', 'FunctionIII')
-                let xhr = new XMLHttpRequest()
+          for (let item of files) {
+            console.log(item)
+            let formData = new FormData()
+            formData.append('image', item)
+            formData.append('function', 'FunctionIII')
+            let xhr = new XMLHttpRequest()
 
-                xhr.onload = function() {
-                    console.log('ok')
-                    console.log(JSON.parse(xhr.responseText))
-                    
-                    args.push(JSON.parse(xhr.responseText))
-                    // predictResult.innerHTML = 'upload success!'
+            xhr.onload = function () {
+              console.log('ok')
+              console.log(JSON.parse(xhr.responseText))
 
-                    text.innerHTML = '上传成功!'
-                    loading.style.display = 'none'
-                }
-                xhr.onerror = function() {
-                    console.log('fail')
-                }
-                xhr.open('post', url, true)
-                xhr.send(formData)
+              args.push(JSON.parse(xhr.responseText))
+
+              text.innerHTML = '上传成功!'
+              loading.style.display = 'none'
             }
+            xhr.onerror = function () {
+              console.log('fail')
+            }
+            xhr.open('post', url, true)
+            xhr.send(formData)
+          }
         } else {
-            console.log('请选择文件')
+          console.log('请选择文件')
         }
-    })
-    
-  }
-}
+      })
 
-api.export(new ImJoyPlugin())
+    }
+  }
+
+  api.export(new ImJoyPlugin())
 </script>
 
 <window lang="html">
@@ -145,14 +140,14 @@ api.export(new ImJoyPlugin())
     <h2>Function III 1:n 人脸识别</h2>
 
     <div>
-        <input type="file" id="fileElem" style="display:none">
-        <a href="#" id="fileSelect">Select file</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="importBaseid">importBaseid</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="file" id="fileElem" style="display:none">
+      <a href="#" id="fileSelect">Select file</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="importBaseid">importBaseid</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
 
-        <div class="padding-10-0">
+      <div class="padding-10-0">
         <div class="display-flex">
           <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
           <div><label id="text">No files selected!</label></div>
@@ -162,21 +157,12 @@ api.export(new ImJoyPlugin())
         <div id="fileList" class="text-align-left column col-6" style="display:flex;"></div>
         <div id="predictResult" class="column col-6 text-align-left" style="display:flex;"></div>
       </div>
-      <!--
-        <br>
-        <div id="fileList">
-            <p>No file selected!</p>
-        </div>
-        <br>
-        <div id="predictResult">
-        </div>
-        -->
     </div>
   </div>
 </window>
 
 <style lang="css">
- .container {
+  .container {
     text-align: left;
   }
 
