@@ -31,8 +31,7 @@ let uploadUrl = 'http://192.168.199.172:3000/file_upload'
 let args = []
 let loading = document.getElementById('loading')
 let text = document.getElementById('text')
-var modal = document.getElementById('myModal');
-var modalImg = document.getElementById("img01");
+let nameArr = []
 class ImJoyPlugin {
   async setup() {
 
@@ -46,6 +45,7 @@ class ImJoyPlugin {
             const list = document.createElement("div");
             fileList.appendChild(list);
             for (let i = 0; i < files.length; i++) {
+                nameArr.push(files[i].name)
                 const container = document.createElement("div");
                 container.style.display = "flex"
                 container.style.marginBottom = "10px"
@@ -97,18 +97,26 @@ class ImJoyPlugin {
 
     let predict = document.getElementById('predict')
     predict.addEventListener('click', async event => {
-        console.log(args)
+        console.log('predict args: ', args)
         loading.style.display = 'block'
         text.innerHTML = '正在检测, 请稍等...'
         let res = await api.call('PythonServer', 'predict', args)
+        console.log('predict: ', res)
         loading.style.display = 'none'
         text.innerHTML = '检测结束!'
         if (res && res.length > 0) {
-            console.log('predict: ', res)
-
+            console.log(nameArr)
+            let arr = []
+            arr.length = 5
+            for (let i = 0; i < res.length; i++) {
+                let fn = res[i].fileName
+                let index = nameArr.indexOf(fn)
+                arr.splice(index, 1, res[i])
+            }
+            console.log('arr for: ', arr)
             const list = document.createElement("div");
                 predictResult.appendChild(list);
-                for (let i = 0; i < res.length; i++) {
+                for (let i = 0; i < arr.length; i++) {
                     const container = document.createElement("div");
                     container.style.display = "flex"
                     container.style.marginBottom = "10px"
@@ -116,7 +124,7 @@ class ImJoyPlugin {
 
                     const divImg = document.createElement("div");
                     const img = document.createElement("img");
-                    img.src = res[i].predictUrl
+                    img.src = arr[i].predictUrl
                     img.height = 200;
                     img.onload = function() {
                         window.URL.revokeObjectURL(this.src);
@@ -126,21 +134,22 @@ class ImJoyPlugin {
 
                     const info = document.createElement("div");
                     const p1 = document.createElement("p")
-                    p1.innerHTML = res[i].fileName
+                    p1.innerHTML = arr[i].fileName
                     info.style.paddingLeft = "10px"
                     info.appendChild(p1)
 
                     const p2 = document.createElement("p")
-                    p2.innerHTML = "IOU: " + res[i].IOU
+                    p2.innerHTML = "IOU: " + arr[i].IOU
                     info.style.paddingLeft = "10px"
                     info.appendChild(p2)
 
                     const p3 = document.createElement("p")
-                    p3.innerHTML = res[i].message
+                    p3.innerHTML = arr[i].message
                     info.style.paddingLeft = "10px"
                     info.appendChild(p3)
                     container.appendChild(info);
                 }
+                
         }
     })
 
@@ -148,6 +157,7 @@ class ImJoyPlugin {
     button.addEventListener('click', event => {
         args = []
         let files = document.getElementById('fileElem').files
+        console.log('upload files: ', files)
         if (files && files.length > 0) {
             let url = uploadUrl
 
@@ -160,7 +170,6 @@ class ImJoyPlugin {
                 let xhr = new XMLHttpRequest()
 
                 xhr.onload = function() {
-                    console.log('ok')
                     console.log(JSON.parse(xhr.responseText))
                     args.push(JSON.parse(xhr.responseText))
                     if (i === files.length - 1) {
@@ -204,9 +213,6 @@ api.export(new ImJoyPlugin())
                 <div id="predictResult" class="column col-6 text-align-left" style="display:flex;"></div>
             </div>
         </div>
-        <div id="myModal" class="modal">
-            <img id="img01">
-        </div>
     </div>
 
 </window>
@@ -225,8 +231,7 @@ img {
     height: 200px !important;
     object-fit: contain;
     border: 1px solid #eee !important;
-    border-radius: 5px;
-    transition: 0.3s;
+    border-radius: 4px;
 }
 
 
@@ -241,96 +246,5 @@ img {
 .padding-10-0 {
     padding: 10px 0;
     margin: 4px 0;
-}
-
-.card {
-    margin: 10px;
-}
-
-
-.modal {
-    cursor: zoom-out;
-    display: none;
-    position: fixed;
-    z-index: 1;
-    padding-top: 100px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(255, 255, 255, 0.9);
-}
-
-.modal-content {
-    margin: auto;
-    display: block;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-/* Add Animation */
-.modal-content {
-    -webkit-animation-name: zoom;
-    -webkit-animation-duration: 0.6s;
-    animation-name: zoom;
-    animation-duration: 0.6s;
-}
-
-@-webkit-keyframes zoom {
-    from {
-        -webkit-transform: scale(0)
-    }
-
-    to {
-        -webkit-transform: scale(1)
-    }
-}
-
-@keyframes zoom {
-    from {
-        transform: scale(0)
-    }
-
-    to {
-        transform: scale(1)
-    }
-}
-
-
-
-
-/* display none */
-.modal-content-zoom-out {
-    -webkit-animation-name: zoom-out;
-    -webkit-animation-duration: 0.5s;
-    animation-name: zoom-out;
-    animation-duration: 0.5s;
-    margin: auto;
-    display: block;
-    max-width: 100%;
-    object-fit: contain;
-
-}
-
-@-webkit-keyframes zoom-out {
-    from {
-        -webkit-transform: scale(1)
-    }
-
-    to {
-        -webkit-transform: scale(0)
-    }
-}
-
-@keyframes zoom-out {
-    from {
-        transform: scale(1)
-    }
-
-    to {
-        transform: scale(0)
-    }
 }
 </style>
