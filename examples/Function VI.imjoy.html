@@ -21,7 +21,7 @@
     "https://unpkg.com/spectre.css/dist/spectre-icons.min.css"
     ],
     "dependencies": [],
-    "defaults": {"w": 40, "h": 15}
+    "defaults": {"w": 40, "h": 10}
     }
 </config>
 
@@ -44,6 +44,7 @@
             let files = this.files
             if (!files.length) {} else {
                 text.innerHTML = ''
+                loading.style.display = 'none'
                 const list = document.createElement("div");
                 fileList.appendChild(list);
                 for (let i = 0; i < files.length; i++) {
@@ -90,6 +91,7 @@
 
             let fileClear = document.getElementById('fileClear')
             fileClear.addEventListener('click', event => {
+                loading.style.display = 'none'
                 text.innerHTML = 'No files selected!'
                 fileElem.value = ''
                 predictResult.innerHTML = ''

@@ -32,6 +32,7 @@
     let loading = document.getElementById('loading')
     let text = document.getElementById('text')
     let nameArr = []
+    let predictResult = null
     class ImJoyPlugin {
         async setup() {
 
@@ -41,6 +42,9 @@
             let files = this.files
             if (!files.length) {} else {
                 text.innerHTML = ''
+                predictResult.innerHTML = ''
+                fileList.innerHTML = ''
+                nameArr = []
                 const list = document.createElement("div");
                 fileList.appendChild(list);
                 for (let i = 0; i < files.length; i++) {
@@ -75,7 +79,7 @@
             fileSelect = document.getElementById("fileSelect");
             fileElem = document.getElementById("fileElem");
             fileList = document.getElementById("fileList");
-            let predictResult = document.getElementById('predictResult')
+            predictResult = document.getElementById('predictResult')
 
             fileSelect.addEventListener("click", function (e) {
                 if (fileElem) {
