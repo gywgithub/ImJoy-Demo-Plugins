@@ -105,6 +105,8 @@
                 text.innerHTML = '正在检测, 请稍等...'
                 let res = await api.call('PythonServer', 'predictVI', args)
                 console.log(res)
+                loading.style.display = 'none'
+                text.innerHTML = '检测结束!'
             })
 
             let button = document.getElementById('upload')
