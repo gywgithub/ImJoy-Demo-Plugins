@@ -1,3 +1,4 @@
+
 <docs lang="markdown">
     [TODO: write documentation for this plugin.]
 </docs>
@@ -27,7 +28,7 @@
     let fileSelect = null
     let fileElem = null
     let fileList = null
-    let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+    let uploadUrl = 'http://127.0.0.1:3000/file_upload'
     let args = []
     let loading = document.getElementById('loading')
     let text = document.getElementById('text')
@@ -35,9 +36,7 @@
     let predictResult = null
     class ImJoyPlugin {
         async setup() {
-
         }
-
         async handleFiles() {
             let files = this.files
             if (!files.length) {} else {
@@ -53,7 +52,6 @@
                     container.style.display = "flex"
                     container.style.marginBottom = "10px"
                     list.appendChild(container);
-
                     const divImg = document.createElement("div");
                     const img = document.createElement("img");
                     img.src = window.URL.createObjectURL(files[i]);
@@ -63,8 +61,6 @@
                     }
                     divImg.appendChild(img);
                     container.appendChild(divImg);
-
-
                     const info = document.createElement("div");
                     info.innerHTML = files[i].name;
                     info.style.paddingLeft = "10px"
@@ -72,24 +68,19 @@
                 }
             }
         }
-
         async run(my) {
             window.URL = window.URL || window.webkitURL;
-
             fileSelect = document.getElementById("fileSelect");
             fileElem = document.getElementById("fileElem");
             fileList = document.getElementById("fileList");
             predictResult = document.getElementById('predictResult')
-
             fileSelect.addEventListener("click", function (e) {
                 if (fileElem) {
                     fileElem.click();
                 }
                 e.preventDefault();
             }, false);
-
             fileElem.addEventListener('change', this.handleFiles, false)
-
             let fileClear = document.getElementById('fileClear')
             fileClear.addEventListener('click', event => {
                 text.innerHTML = 'No files selected!'
@@ -97,7 +88,6 @@
                 predictResult.innerHTML = ''
                 fileList.innerHTML = ''
             })
-
             let predict = document.getElementById('predict')
             predict.addEventListener('click', async event => {
                 console.log('predict args: ', args)
@@ -124,7 +114,6 @@
                         container.style.display = "flex"
                         container.style.marginBottom = "10px"
                         list.appendChild(container);
-
                         const divImg = document.createElement("div");
                         const img = document.createElement("img");
                         img.src = arr[i].url1
@@ -134,28 +123,23 @@
                         }
                         divImg.appendChild(img);
                         container.appendChild(divImg);
-
                         const info = document.createElement("div");
                         const p1 = document.createElement("p")
                         p1.innerHTML = arr[i].fileName
                         info.style.paddingLeft = "10px"
                         info.appendChild(p1)
-
                         const p2 = document.createElement("p")
                         p2.innerHTML = "IOU: " + arr[i].IOU
                         info.style.paddingLeft = "10px"
                         info.appendChild(p2)
-
                         const p3 = document.createElement("p")
                         p3.innerHTML = arr[i].message
                         info.style.paddingLeft = "10px"
                         info.appendChild(p3)
                         container.appendChild(info);
                     }
-
                 }
             })
-
             let button = document.getElementById('upload')
             button.addEventListener('click', event => {
                 args = []
@@ -163,7 +147,6 @@
                 console.log('upload files: ', files)
                 if (files && files.length > 0) {
                     let url = uploadUrl
-
                     loading.style.display = 'block'
                     text.innerHTML = '正在上传, 请稍等...'
                     for (let i = 0; i < files.length; i++) {
@@ -171,7 +154,6 @@
                         formData.append('image', files[i])
                         formData.append('function', 'FunctionI')
                         let xhr = new XMLHttpRequest()
-
                         xhr.onload = function () {
                             console.log(JSON.parse(xhr.responseText))
                             args.push(JSON.parse(xhr.responseText))
@@ -190,10 +172,8 @@
                     console.log('请选择文件')
                 }
             })
-
         }
     }
-
     api.export(new ImJoyPlugin())
 </script>
 <window lang="html">
@@ -224,12 +204,10 @@
     .container {
         text-align: left;
     }
-
     li {
         list-style: none;
         margin: 20px 0;
     }
-
     img {
         width: 200px !important;
         height: 200px !important;
@@ -237,16 +215,12 @@
         border: 1px solid #eee !important;
         border-radius: 4px;
     }
-
-
     .display-flex {
         display: flex;
     }
-
     .display-none {
         display: none;
     }
-
     .padding-10-0 {
         padding: 10px 0;
         margin: 4px 0;

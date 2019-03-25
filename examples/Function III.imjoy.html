@@ -29,7 +29,7 @@
   let fileSelect = null
   let fileElem = null
   let fileList = null
-  let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+  let uploadUrl = 'http://127.0.0.1:3000/file_upload'
   let args = []
   let predictResult = null
   let loading = document.getElementById('loading')
@@ -77,6 +77,8 @@
         loading.style.display = 'block'
         text.innerHTML = '正在检测, 请稍等...'
         let res = await api.call('PythonServer', 'predictIII', args)
+        loading.style.display = 'none'
+        text.innerHTML = '检测结束!'
         console.log(res)
       })
 

@@ -4,13 +4,13 @@
 
 <config lang="json">
   {
-  "name": "Function IV",
+  "name": "Function V",
   "type": "window",
   "tags": [],
   "ui": "",
   "version": "0.1.0",
   "api_version": "0.1.2",
-  "description": "关键点检测",
+  "description": "活体检测",
   "icon": "extension",
   "inputs": null,
   "outputs": null,
@@ -29,16 +29,16 @@
   let fileSelect = null
   let fileElem = null
   let fileList = null
-  let uploadUrl = 'http://192.168.199.172:3000/file_upload'
+  let uploadUrl = 'http://127.0.0.1:3000/file_upload'
   let args = []
   let predictResult = null
   let loading = document.getElementById('loading')
   let text = document.getElementById('text')
-
   class ImJoyPlugin {
     async setup() {
 
     }
+
     async handleFiles() {
       let files = this.files
       if (files.length) {
@@ -77,8 +77,10 @@
         console.log(args)
         loading.style.display = 'block'
         text.innerHTML = '正在检测, 请稍等...'
-        let res = await api.call('PythonServer', 'predictIV', args)
+        let res = await api.call('PythonServer', 'predictV', args)
         console.log(res)
+        loading.style.display = 'none'
+        text.innerHTML = '检测结束!'
       })
 
       let button = document.getElementById('upload')
@@ -95,11 +97,10 @@
             console.log(item)
             let formData = new FormData()
             formData.append('image', item)
-            formData.append('function', 'FunctionIII')
+            formData.append('function', 'FunctionV')
             let xhr = new XMLHttpRequest()
 
             xhr.onload = function () {
-              console.log('ok')
               console.log(JSON.parse(xhr.responseText))
 
               args.push(JSON.parse(xhr.responseText))
@@ -126,7 +127,7 @@
 
 <window lang="html">
   <div class="container">
-    <h2>Function IV 关键点检测</h2>
+    <h2>Function V 活体检测</h2>
 
     <div>
       <input type="file" id="fileElem" style="display:none">
@@ -134,6 +135,7 @@
       <a href="#" id="fileClear">Clear file</a>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="#" id="upload">Upload</a>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="#" id="predict">Predict</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
       <div class="padding-10-0">
         <div class="display-flex">
           <div class="loading display-none" id="loading">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
