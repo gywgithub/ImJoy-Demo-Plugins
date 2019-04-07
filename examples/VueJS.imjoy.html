@@ -1,0 +1,62 @@
+﻿<docs lang="markdown">
+[TODO: write documentation for this plugin.]
+</docs>
+
+<config lang="json">
+{
+  "name": "VueJS",
+  "type": "window",
+  "tags": [],
+  "ui": "",
+  "version": "0.1.0",
+  "api_version": "0.1.2",
+  "description": "[TODO: describe this plugin with one sentence.]",
+  "icon": "extension",
+  "inputs": null,
+  "outputs": null,
+  "env": "",
+  "requirements": ["https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.22/vue.min.js"],
+  "dependencies": [],
+  "defaults": {"w": 20, "h": 10}
+}
+</config>
+<attachment name="app">
+<div>
+    <h2>Vue JS</h2>
+    <p>{{text}}</p>
+</div>
+</attachment>
+<script lang="javascript">
+class ImJoyPlugin {
+  async setup() {
+    console.log('setup()')
+  }
+
+  async run(my) {
+    console.log('running in the plugin ')
+    let el = document.getElementById('app')
+    const sketch = document.createElement('div')
+    sketch.style = 'height: 100%;'
+    sketch.id = 'sketch'
+    el.appendChild(sketch)
+    let vueObj = new Vue({
+      el: '#sketch',
+      template: await api.getAttachment('app'),
+      data: {
+        text: 'hello vue'
+      }
+    })
+  }
+}
+
+api.export(new ImJoyPlugin())
+</script>
+
+<window lang="html">
+  <div id="app">
+  </div>
+</window>
+
+<style lang="css">
+
+</style>
